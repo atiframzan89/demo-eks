@@ -1,0 +1,104 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mirth
+  labels:
+    app: mirth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mirth
+  template:
+    metadata:
+      name: mirth
+      labels:
+        app: mirth
+    spec:
+      containers:
+        - name: mirth
+          image: 055638961298.dkr.ecr.us-east-1.amazonaws.com/sequent/mirth:sequent-license-4.0.1
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: https
+              containerPort: 443
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: mirth-svc
+# spec:
+#   ports:
+#     - port: 80
+#       targetPort: 443
+#       protocol: TCP
+#   type: NodePort
+#   selector:
+#     app: mirth
+---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: "{{ .Values.mirth.name }}"
+#   annotations:
+#     alb.ingress.kubernetes.io/certificate-arn: "{{ .Values.acm.acm_cert_arn }}"
+#     alb.ingress.kubernetes.io/scheme: internet-facing
+#     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+#     alb.ingress.kubernetes.io/ssl-redirect: '443'
+#     alb.ingress.kubernetes.io/group.name: "ingress-rules"
+#     alb.ingress.kubernetes.io/group.order: "3"
+#     #alb.ingress.kubernetes.io/tags: Name="{{ .Values.mirth.name }}",Environment="{{ .Values.tags.env }}","Customer="{{ .Values.tags.customer }}"
+# spec:
+#   ingressClassName: alb
+#   rules:
+#     - host: mirth-eks-dev.stella-apps.com
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: "{{ .Values.mirth.svc_name }}"
+#                 port:
+#                   number: 80
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: mirth-ingress
+#   # namespace: 1-example
+#   annotations:
+#     alb.ingress.kubernetes.io/scheme: internet-facing
+#     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+#     alb.ingress.kubernetes.io/tags: Environment=dev,Team=test
+# spec:
+#   ingressClassName: alb
+#   rules:
+#     - host: mirth-eks-dev.stella-apps.com
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Exact
+#             backend:
+#               service:
+#                 name: mirth-svc
+#                 port:
+#                   number: 80
+apiVersion: v1
+kind: Service
+metadata:
+  name: mirth-svc
+  # namespace: 5-example
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    # service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+spec:
+  ports:
+  - port: 443
+    protocol: TCP
+  type: LoadBalancer
+  selector:
+    app: mirth

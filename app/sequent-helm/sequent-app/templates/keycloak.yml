@@ -1,0 +1,83 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Values.keycloak.name }}"
+  labels:
+    app: "{{ .Values.keycloak.name }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ .Values.keycloak.name }}"
+  template:
+    metadata:
+      name: "{{ .Values.keycloak.name }}"
+      labels:
+        app: "{{ .Values.keycloak.name }}"
+    spec:
+      containers:
+        - name: "{{ .Values.keycloak.name }}"
+          image: "{{ .Values.keycloak.image_tag }}"
+          args: ["start-dev"]
+          env:
+            - name: KEYCLOAK_ADMIN
+              value: qs-admin
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              value: dem0azUba
+            - name: KEYCLOAK_HOSTNAME
+              value: "keycloak"
+            - name: KC_HOSTNAME_STRICT
+              value: "false"
+            - name: KC_HOSTNAME
+              value: "{{ .Values.keycloak.host }}"
+            - name: KC_PROXY
+              value: "edge"
+            - name: KC_HTTPS_PORT
+              value: "8443"
+          ports:
+            - name: keycloak-http
+              containerPort: 8080
+          ports:
+            - name: keycloak-https
+              containerPort: 8443
+          imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Values.keycloak.svc_name }}"
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+  type: NodePort
+  selector:
+    app: "{{ .Values.keycloak.name }}"
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "{{ .Values.keycloak.name }}"
+  annotations:
+    alb.ingress.kubernetes.io/certificate-arn: "{{ .Values.acm.acm_cert_arn }}"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/group.name: "ingress-rules"
+    alb.ingress.kubernetes.io/group.order: "2"
+    #alb.ingress.kubernetes.io/tags: Name="{{ .Values.keycloak.name }}",Environment="{{ .Values.tags.env }}",Customer="{{ .Values.tags.customer }}"
+spec:
+  ingressClassName: alb
+  rules:
+    - host: "{{ .Values.keycloak.host }}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: "{{ .Values.keycloak.svc_name }}"
+                port:
+                  number: 80

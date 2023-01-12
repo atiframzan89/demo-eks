@@ -1,0 +1,36 @@
+repository:
+  repo_url: "055638961298.dkr.ecr.us-east-1.amazonaws.com/sequent/"
+
+# DSPWeb values
+dspweb:
+  name: "dspweb"
+  svc_name: "dspweb-svc"
+  image_url: "055638961298.dkr.ecr.us-east-1.amazonaws.com/sequent/dspweb:eks-demo-11"
+
+# DSPRest values
+dsprest:
+  name: "dsprest"
+  svc_name: "dsprest-svc"
+  image_url: "055638961298.dkr.ecr.us-east-1.amazonaws.com/sequent/dsprest:eks-demo-28"
+
+# mirth values
+mirth:
+  name: "mirth"
+  svc_name: "mirth-svc"
+  image_url: "055638961298.dkr.ecr.us-east-1.amazonaws.com/sequent/mirth:license-4.0.1"
+
+# Keycloak values
+keycloak:
+  name: "keycloak"
+  svc_name: "keycloak-svc"
+  image_tag: "quay.io/keycloak/keycloak:18.0.0"
+  host: eks-keycloak-dev.stella-apps.com
+
+# ACM Certificate
+acm:
+  acm_cert_arn: "arn:aws:acm:us-west-2:055638961298:certificate/0d5e5df9-3360-4081-9882-262de32c6f54"
+
+# Environment
+tags:
+  env: "dev"
+  customer: "sequent"
