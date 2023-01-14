@@ -234,70 +234,44 @@ resource "helm_release" "aws-load-balancer-controller" {
   ]
 }
 
+# Creating an S3 bucket
+resource "aws_s3_bucket" "customer-s3-bucket"{
+  bucket = "${var.s3-bucket-name}"
+  # region = "${var.region}"
 
-# resource "helm_release" "prometheus" {
-#   chart      = "prometheus"
-#   name       = "prometheus"
-#   namespace  = "kube-system"
-#   repository = "https://prometheus-community.github.io/helm-charts"
-#   version    = "15.5.3"
+  tags = {
+    "Name"            = "${var.customer}-s3-${var.environment}"
+    "Customer"        = var.customer
+    "Environment"     = "${var.environment}"
+    "Terraform"       = "True"
+}
+}
 
-#   set {
-#     name  = "podSecurityPolicy.enabled"
-#     value = true
-#   }
+# Public Access S3 Bucket
 
-#   set {
-#     name  = "server.persistentVolume.enabled"
-#     value = false
-#   }
+# resource "aws_s3_bucket_public_access_block" "customer-s3-public-access" {
+#   bucket = aws_s3_bucket.customer-s3-bucket.id
 
-#   # You can provide a map of value using yamlencode. Don't forget to escape the last element after point in the name
-#   set {
-#     name = "server\\.resources"
-#     value = yamlencode({
-#       limits = {
-#         cpu    = "200m"
-#         memory = "50Mi"
-#       }
-#       requests = {
-#         cpu    = "100m"
-#         memory = "30Mi"
-#       }
-#     })
-#   }
+#   # block_public_acls   = true
+#   # block_public_policy = true
 # }
 
-# resource "kubernetes_secret" "grafana" {
-#   metadata {
-#     name      = "grafana"
-#     namespace = "kube-system"
-#   }
+# public S3 bucket
 
-#   data = {
-#     admin-user     = "admin"
-#     admin-password = random_password.grafana.result
-#   }
-# }
+resource "aws_s3_bucket_acl" "customer-public-s3-acl" {
+  bucket = aws_s3_bucket.customer-s3-bucket.id
+  acl    = "public-read"
+}
 
-# resource "random_password" "grafana" {
-#   length = 24
-# }
+# Creating VPC Endpoint S3
 
-# resource "helm_release" "grafana" {
-#   chart      = "grafana"
-#   name       = "grafana"
-#   repository = "https://grafana.github.io/helm-charts"
-#   namespace  = "kube-system"
-#   version    = "6.24.1"
-  
-  # values = [
-  #   templatefile("${path.module}/template/grafana-values.yaml", {
-  #     admin_existing_secret = kubernetes_secret.grafana.metadata[0].name
-  #     admin_user_key        = "admin-user"
-  #     admin_password_key    = "admin-password"
-  #     prometheus_svc        = "prometheus-svc"
-  #     replicas              = 1
-  #   })
-  # ]
-#}
+resource "aws_vpc_endpoint" "customer-vpc-endpoint-s3" {
+  vpc_id       = var.vpc
+  service_name = "com.amazonaws.${var.region}.s3"
+
+}
+
+resource "aws_vpc_endpoint_route_table_association" "customer-vpc-endpoint-rt-association" {
+  route_table_id  = var.private-rt
+  vpc_endpoint_id = aws_vpc_endpoint.customer-vpc-endpoint-s3.id
+}

@@ -26,6 +26,8 @@ module "eks" {
     customer-nodes-AmazonEC2ContainerRegistryReadOnly   = module.iam.nodes-AmazonEC2ContainerRegistryReadOnly
     aws-load-balancer-controller-role-arn               = module.iam.aws-load-balancer-controller-role-arn
     aws-load-balancer-controller-attach                 = module.iam.aws-load-balancer-controller-attach
+    s3-bucket-name                                      = var.s3-bucket-name
+    private-rt                                          = module.vpc.private-rt
                           
 }
 

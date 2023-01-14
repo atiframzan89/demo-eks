@@ -29,3 +29,7 @@ output "customer-subnet-group" {
 output "internet-gateway-id" {
   value = aws_nat_gateway.customer-igw.id
 }
+
+output "private-rt" {
+  value = aws_route_table.private_rt_1.id
+}

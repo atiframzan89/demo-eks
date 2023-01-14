@@ -49,6 +49,19 @@ resource "aws_iam_role" "customer-iam-nodes-role" {
   })
 }
 
+
+resource "aws_iam_role_policy_attachment" "customer-s3-AmazonEKSWorkerNodePolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+  role       = aws_iam_role.customer-iam-nodes-role.name
+#   tags          = {
+#     "Name"          = "${var.customer}-AmazonEKSWorkerNodePolicy-${var.environment}"
+#     "Environment"   = var.environment
+#     "Terraform"     = "True"
+
+#   }
+}
+
+
 resource "aws_iam_role_policy_attachment" "customer-nodes-AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.customer-iam-nodes-role.name
