@@ -108,5 +108,24 @@ soum-demo-svc   LoadBalancer   10.100.23.28   a4b0a08f0a3364f4c991428d5fd07960-1
 
 Access the app on public dns on port 5000 in the browser.
 
-![Alt text](./assets/5-app.png?raw=true "ArgoCD Github Connectivity")
+![Alt text](./assets/5-app.png?raw=true "APP")
 
+You need to upload the two files (one by one)
+* python-app/index.html
+* python-app/cat.jpg
+
+Once you upload these files you need to goto the bucket --> Properties --> At bottom Enable 
+
+![Alt text](./assets/6-s3.png?raw=true "S3 Configuration")
+
+Make all the objects in the bucket public using `Make Public ACL` while select all the objects
+
+![Alt text](./assets/7-s3.png?raw=true "S3 Configuration")
+
+After apply the above changes you need to make sure that `Bucket Object Ownership` will be set to `Bucket owner preferred`. Finally make sure that the below object permission will be set
+
+![Alt text](./assets/8-s3.png?raw=true "S3 Configuration")
+
+After that goto the bucket properties and at the bottom you will find bucket static site url copy and paste into the browser you will get the below content.
+
+![Alt text](./assets/9-final.png?raw=true "S3 Configuration")
