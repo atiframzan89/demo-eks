@@ -53,6 +53,21 @@ It will take around 15 minutes to deploy the whole infrastructure. To connect wi
 aws eks --region us-east-1 update-kubeconfig --name <eks-cluster-name>
 ```
 
+# Mongodb Atlas Configuration
+
+Signup for mongodb trial account.
+
+* create cluster (After 4 to 5 minutes it will be available)
+* create database
+* create collection
+
+![Alt text](./assets/11-mongo.png?raw=true "Architectre")
+
+* change the network access to 
+
+![Alt text](./assets/10-mongo.png?raw=true "Architectre")
+
+
 # Installing ArgoCD
 
 After that we will be installing ArgoCD. Use the below command
@@ -129,3 +144,9 @@ After apply the above changes you need to make sure that `Bucket Object Ownershi
 After that goto the bucket properties and at the bottom you will find bucket static site url copy and paste into the browser you will get the below content.
 
 ![Alt text](./assets/9-final.png?raw=true "S3 Configuration")
+
+Monogdb Atlas data
+![Alt text](./assets/12-mongo.png?raw=true "S3 Configuration")
+
+
+
