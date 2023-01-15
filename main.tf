@@ -28,6 +28,7 @@ module "eks" {
     aws-load-balancer-controller-attach                 = module.iam.aws-load-balancer-controller-attach
     s3-bucket-name                                      = var.s3-bucket-name
     private-rt                                          = module.vpc.private-rt
+    # profile                                             = var.profile
                           
 }
 
@@ -40,18 +41,18 @@ module "iam" {
     
 }
 
-module "rds" {
-    source                          = "./modules/rds"
-    environment                     = var.environment
-    customer                        = var.customer
-    vpc                             = module.vpc.vpc-id
-    customer-subnet-group           = module.vpc.customer-subnet-group
-    eks-node-group-sg               = module.eks.eks-node-group-sg
-    bastion-sg-id                   = module.bastion.bastion-sg-id
+# module "rds" {
+#     source                          = "./modules/rds"
+#     environment                     = var.environment
+#     customer                        = var.customer
+#     vpc                             = module.vpc.vpc-id
+#     customer-subnet-group           = module.vpc.customer-subnet-group
+#     eks-node-group-sg               = module.eks.eks-node-group-sg
+#     bastion-sg-id                   = module.bastion.bastion-sg-id
     
     
 
-}
+# }
 
 module "bastion" {
     source                          = "./modules/bastion"
@@ -61,9 +62,7 @@ module "bastion" {
     internet-gateway-id             = module.vpc.internet-gateway-id
     public-subnet                   = module.vpc.public-subnet-1
     amazon-linux-2                  = data.aws_ami.amazon-linux-2
-    rds-endpoint                    = module.rds.rds-endpoint
-    rds-username                    = module.rds.rds-username
-    rds-password                    = module.rds.rds-password
-    rds-db-name                     = module.rds.rds-db-name
+    keypair                         = var.keypair
+    
     #depends_on                      = [ module.rds ]
 }
