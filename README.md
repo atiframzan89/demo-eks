@@ -89,3 +89,24 @@ Next you need click on three dots and select "Create an application"
 
 ![Alt text](./assets/3-argocd.png?raw=true "ArgoCD Github Connectivity")
 ![Alt text](./assets/4-argocd.png?raw=true "ArgoCD Github Connectivity")
+
+It will deploy the application eks cluster. Now since our application requires AWS_ACCESS_KEY and AWS_SECRET_ACCESS_KEY, we need to deploy it manually by changing the secrets in app/soum-demo.yml file. Also we need to specify the AWS_BUCKET_NAME. 
+
+Next we need to deploy the application, but first we need to remove it from the ArgoCD and then redploy using the below command.
+
+```bash
+$ kubectl apply -f app/soum-demo.yml
+```
+It will deploy the pod, service and secrets. After 2 to 3 minutes the svc name will be available with public dns.
+
+```bash
+$ kubectl get svc
+NAME            TYPE           CLUSTER-IP     EXTERNAL-IP                                                               PORT(S)          AGE
+kubernetes      ClusterIP      10.100.0.1     <none>                                                                    443/TCP          64m
+soum-demo-svc   LoadBalancer   10.100.23.28   a4b0a08f0a3364f4c991428d5fd07960-1193304650.us-east-1.elb.amazonaws.com   5000:31780/TCP   7m39s
+```
+
+Access the app on public dns on port 5000 in the browser.
+
+![Alt text](./assets/5-app.png?raw=true "ArgoCD Github Connectivity")
+
