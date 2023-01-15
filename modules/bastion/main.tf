@@ -6,11 +6,11 @@ resource "aws_instance" "customer-bastion" {
  associate_public_ip_address            = true
 #  iam_instance_profile                   = "${aws_iam_instance_profile.test.id}"
  instance_type                          = "t2.micro"
- key_name                               = "stella-infra-us-west-2"
+ key_name                               = var.keypair
 #  vpc_security_group_ids                 = ["${aws_security_group.test.id}"]
  security_groups                        = [ aws_security_group.ec2-sg.id ]
  subnet_id                              = var.public-subnet
- user_data                              = data.template_file.userdata.rendered
+ #user_data                              = data.template_file.userdata.rendered
 }
 
 
@@ -45,34 +45,3 @@ resource "aws_security_group" "ec2-sg" {
 
 }
 
-# Running SQL Script
-
-data "template_file" "userdata" {
-  template = file("${path.module}/sequent-dsp-dbscripts/db_setup.sh")
-  vars = {
-    rds-endpoint  = var.rds-endpoint
-    rds-username  = var.rds-username
-    rds-db-name   = var.rds-db-name
-    rds-port      = "3306"
-    db-namespace  = "default"
-    rds-password  = var.rds-password
-  }
-}
-
-
-resource "null_resource" "cp_ansible" {
-  depends_on = [ aws_instance.customer-bastion ]
-  provisioner "file" {
-  source      = "modules/bastion/sequent-dsp-dbscripts/1_DDL_sequent_dsp.sql"
-  destination = "/home/ec2-user/"
-
-  connection {
-    type        = "ssh"
-    host        = aws_instance.customer-bastion.public_ip
-    user        = "ec2-user"
-    private_key = file("/home/atif/stella-infra-us-west-2.pem")
-    insecure    = true
-  }
-}
-
-}

@@ -4,7 +4,4 @@ variable "environment" {}
 variable "public-subnet" {}
 variable "vpc" {}
 variable "amazon-linux-2" {}
-variable "rds-username" {}
-variable "rds-endpoint" {}
-variable "rds-password" {}
-variable "rds-db-name" {}
+variable "keypair" {}

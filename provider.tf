@@ -9,9 +9,9 @@ terraform {
 
 provider "aws" {
   region = var.region
+  # profile = var.profile
   #version = "~> 3.0"
 }
-
 provider "kubernetes" {
   host = module.eks.eks-cluster-endpoint
   cluster_ca_certificate = base64decode(module.eks.certificate_authority)
